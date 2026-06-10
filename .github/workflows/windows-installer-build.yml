@@ -33,6 +33,10 @@ jobs:
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
       SUPERSET_WORKSPACE_NAME: superset
+      # native-keymap 3.3.9 uses N-API but Electron 40's headers enable V8
+      # deprecation annotations that MSVC reports as C4996 during rebuild.
+      # _CL_ appends these flags after node-gyp's defaults.
+      _CL_: /U V8_DEPRECATION_WARNINGS /wd4996
 
     steps:
       - name: Enable Git long paths
