@@ -41,6 +41,18 @@ describe("getNotifyScriptContent", () => {
 		expect(cmd).toContain(WINDOWS_NOTIFY_SCRIPT_MARKER);
 	});
 
+	it("quotes Windows notify runtime paths with spaces and parentheses", () => {
+		const cmd = getWindowsNotifyCommandScriptContent(
+			String.raw`C:\Program Files (x86)\Superset\Superset.exe`,
+		);
+
+		expect(cmd).toContain(
+			String.raw`set "NODE_EXE=C:\Program Files (x86)\Superset\Superset.exe"`,
+		);
+		expect(cmd).toContain(String.raw`"%NODE_EXE%" "%HOOK_DIR%notify.mjs" %*`);
+		expect(cmd).not.toContain("bash");
+	});
+
 	it("emits a Node notify implementation for Windows", () => {
 		const script = getNotifyNodeScriptContent();
 

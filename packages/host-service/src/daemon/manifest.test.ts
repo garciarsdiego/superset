@@ -36,10 +36,26 @@ function baseManifest(): PtyDaemonManifest {
 	};
 }
 
+function fileMode(filePath: string): number {
+	return fs.statSync(filePath).mode & 0o777;
+}
+
 describe("PtyDaemonManifest", () => {
 	test("write + read round-trips required fields", () => {
 		writePtyDaemonManifest(baseManifest());
 		expect(readPtyDaemonManifest(TEST_ORG)).toEqual(baseManifest());
+	});
+
+	test("writes private manifest files where POSIX modes are supported", () => {
+		writePtyDaemonManifest(baseManifest());
+		const dir = path.join(TEST_HOME, "host", TEST_ORG);
+		const manifestPath = path.join(dir, "pty-daemon-manifest.json");
+
+		expect(fs.existsSync(manifestPath)).toBe(true);
+		if (process.platform !== "win32") {
+			expect(fileMode(dir)).toBe(0o700);
+			expect(fileMode(manifestPath)).toBe(0o600);
+		}
 	});
 
 	test("write + read round-trips Phase 2 handoff fields", () => {

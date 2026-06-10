@@ -101,6 +101,9 @@ Packaged desktop validation included:
 
 - The GA target in this port is Windows x64. Windows ARM64 is intentionally left
   for a later pass.
+- The fork's near-term Windows installer artifacts are unsigned experimental
+  builds. The release workflow publishes SHA256 checksums, but real code signing
+  remains a separate release-readiness decision.
 - Some Windows integration tests can emit non-failing `MaxListenersExceededWarning`
   noise from node-pty test harnesses after passing.
 - Local development setup may still require Docker Desktop and Caddy, and may

@@ -3,6 +3,7 @@
 // host-service's own manifest — the daemon outlives host-service restarts.
 
 import {
+	chmodSync,
 	existsSync,
 	mkdirSync,
 	readdirSync,
@@ -47,11 +48,22 @@ export function writePtyDaemonManifest(manifest: PtyDaemonManifest): void {
 	if (!existsSync(dir)) {
 		mkdirSync(dir, { recursive: true, mode: 0o700 });
 	}
+	try {
+		chmodSync(dir, 0o700);
+	} catch {
+		// Best-effort hardening; Windows may rely on profile ACLs instead.
+	}
+	const path = ptyDaemonManifestPath(manifest.organizationId);
 	writeFileSync(
-		ptyDaemonManifestPath(manifest.organizationId),
+		path,
 		JSON.stringify(manifest),
 		{ encoding: "utf-8", mode: 0o600 },
 	);
+	try {
+		chmodSync(path, 0o600);
+	} catch {
+		// Best-effort hardening; writeFileSync mode only applies on creation.
+	}
 }
 
 export function readPtyDaemonManifest(

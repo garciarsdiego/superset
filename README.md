@@ -17,6 +17,7 @@ Useful links:
 - Upstream sync playbook: [docs/windows-sync-playbook.md](docs/windows-sync-playbook.md)
 - Triage workflow: [docs/windows-triage.md](docs/windows-triage.md)
 - Validation audit: [docs/windows-port-audit.md](docs/windows-port-audit.md)
+- Shell/hooks notes: [docs/windows-shell-hooks.md](docs/windows-shell-hooks.md)
 
 ## Current Status
 
@@ -51,6 +52,21 @@ paid-feature controls. The source remains under Elastic License 2.0; see
 
 If this fork has a published Windows release, download the latest
 `Superset-*-x64.exe` installer from the fork's Releases page.
+
+Experimental Windows installers from this fork are unsigned unless the release
+notes explicitly say otherwise. Windows SmartScreen, Defender, antivirus, or UAC
+may warn before install. Verify the downloaded installer against the published
+`SHA256SUMS.txt` before running it:
+
+```powershell
+cd "$env:USERPROFILE\Downloads"
+$expected = (Select-String -Path .\SHA256SUMS.txt -Pattern 'Superset-.*-x64\.exe').Line.Split(' ')[0]
+$actual = (Get-FileHash -Algorithm SHA256 -LiteralPath .\Superset-<version>-x64.exe).Hash.ToLowerInvariant()
+if ($actual -ne $expected) { throw "Checksum mismatch" }
+```
+
+Do not use production secrets or irreplaceable project data when testing an
+unsigned experimental build.
 
 If no release artifact is published yet, build locally:
 
@@ -117,7 +133,7 @@ The fork has two Windows-specific GitHub Actions:
 - `Windows Port CI`: automatic typecheck and focused Windows port tests on PRs
   and pushes to `windows-experimental` or `windows-native-port`.
 - `Windows Experimental Installer`: manual unsigned Windows x64 installer build
-  with downloadable artifacts.
+  with downloadable artifacts and `SHA256SUMS.txt` checksums.
 
 ---
 

@@ -33,6 +33,7 @@ jobs:
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
       SUPERSET_WORKSPACE_NAME: superset
+      SUPERSET_EXPERIMENTAL_WINDOWS_BUILD: "1"
       # native-keymap 3.3.9 uses N-API but Electron 40's headers enable V8
       # deprecation annotations that MSVC reports as C4996 during rebuild.
       # _CL_ appends these flags after node-gyp's defaults.
@@ -91,6 +92,21 @@ jobs:
             Select-Object FullName, Length, LastWriteTime |
             Format-Table -AutoSize
 
+      - name: Generate SHA256 checksums
+        shell: pwsh
+        run: |
+          $releaseDir = "apps/desktop/release"
+          $checksumPath = Join-Path $releaseDir "SHA256SUMS.txt"
+          Get-ChildItem -LiteralPath $releaseDir -File |
+            Where-Object { $_.Extension -in ".exe", ".blockmap", ".yml" } |
+            Sort-Object Name |
+            ForEach-Object {
+              $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName
+              "{0}  {1}" -f $hash.Hash.ToLowerInvariant(), $_.Name
+            } |
+            Set-Content -LiteralPath $checksumPath -Encoding ascii
+          Get-Content -LiteralPath $checksumPath
+
       - name: Upload installer artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -99,6 +115,7 @@ jobs:
             apps/desktop/release/*.exe
             apps/desktop/release/*.blockmap
             apps/desktop/release/latest*.yml
+            apps/desktop/release/SHA256SUMS.txt
           retention-days: ${{ fromJSON(inputs.retention_days) }}
           if-no-files-found: error
 

@@ -12,12 +12,10 @@
  * - Auth token: ~/.superset/terminal-host.token
  */
 
-import { randomBytes } from "node:crypto";
 import {
 	chmodSync,
 	existsSync,
 	mkdirSync,
-	readFileSync,
 	unlinkSync,
 	writeFileSync,
 } from "node:fs";
@@ -50,6 +48,7 @@ import {
 	type TerminalExitEvent,
 	type WriteRequest,
 } from "../lib/terminal-host/types";
+import { ensureAuthToken } from "./auth-token";
 import { setupTerminalHostSignalHandlers } from "./signal-handlers";
 import { TerminalHost } from "./terminal-host";
 
@@ -82,24 +81,7 @@ function log(
 	}
 }
 
-// =============================================================================
-// Token Management
-// =============================================================================
-
 let authToken: string;
-
-function ensureAuthToken(): string {
-	if (existsSync(TOKEN_PATH)) {
-		// Read existing token
-		return readFileSync(TOKEN_PATH, "utf-8").trim();
-	}
-
-	// Generate new token (32 bytes = 64 hex chars)
-	const token = randomBytes(32).toString("hex");
-	writeFileSync(TOKEN_PATH, token, { mode: 0o600 });
-	log("info", "Generated new auth token");
-	return token;
-}
 
 function validateToken(token: string): boolean {
 	return token === authToken;
@@ -728,7 +710,7 @@ async function startServer(): Promise<void> {
 	}
 
 	// Initialize auth token
-	authToken = ensureAuthToken();
+	authToken = ensureAuthToken(TOKEN_PATH, (message) => log("info", message));
 
 	// Initialize terminal host
 	terminalHost = new TerminalHost({

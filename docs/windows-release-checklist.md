@@ -70,6 +70,7 @@ Preferred automated path:
 2. Select `Windows Experimental Installer`.
 3. Run the workflow on `windows-experimental` or a specific SHA/tag.
 4. Download `superset-windows-experimental-installer` from artifacts.
+5. Confirm the artifact includes `SHA256SUMS.txt`.
 
 Local fallback:
 
@@ -84,6 +85,44 @@ Expected:
 
 ```text
 apps/desktop/release/Superset-<version>-x64.exe
+apps/desktop/release/SHA256SUMS.txt
+```
+
+The automated workflow generates `SHA256SUMS.txt` for `.exe`, `.blockmap`, and
+`latest*.yml` files and uploads it with the installer artifact. For local
+fallback builds, generate the checksum before sharing the installer:
+
+```powershell
+cd "C:\path\to\superset\apps\desktop\release"
+Get-ChildItem -File |
+  Where-Object { $_.Extension -in ".exe", ".blockmap", ".yml" } |
+  Sort-Object Name |
+  ForEach-Object {
+    $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName
+    "{0}  {1}" -f $hash.Hash.ToLowerInvariant(), $_.Name
+  } |
+  Set-Content -LiteralPath .\SHA256SUMS.txt -Encoding ascii
+```
+
+Publish the checksum next to the installer and include this tester command in
+release notes:
+
+```powershell
+cd "$env:USERPROFILE\Downloads"
+$expected = (Select-String -Path .\SHA256SUMS.txt -Pattern 'Superset-.*-x64\.exe').Line.Split(' ')[0]
+$actual = (Get-FileHash -Algorithm SHA256 -LiteralPath .\Superset-<version>-x64.exe).Hash.ToLowerInvariant()
+if ($actual -ne $expected) { throw "Checksum mismatch" }
+```
+
+Experimental Windows artifacts built by the `Windows Experimental Installer`
+workflow set `SUPERSET_EXPERIMENTAL_WINDOWS_BUILD=1`, which disables desktop
+auto-update checks for that build. This prevents unsigned manual artifacts from
+polling the upstream release channel for missing Windows `latest.yml` metadata.
+
+For a local experimental package build, set the same flag before `prebuild`:
+
+```powershell
+$env:SUPERSET_EXPERIMENTAL_WINDOWS_BUILD = "1"
 ```
 
 If only the electron-builder packaging step needs to be retried:
@@ -95,6 +134,14 @@ bun run --cwd apps/desktop scripts/run-electron-builder.ts --publish never --win
 ```
 
 ## 5. Smoke Test Installer
+
+Before testing:
+
+- Confirm the build is clearly labeled unsigned unless real code signing was
+  configured for this release.
+- Expect possible Windows SmartScreen, Defender, antivirus, or UAC warnings.
+- Do not use production secrets, irreplaceable projects, or data that cannot be
+  restored from backup.
 
 Test:
 
@@ -120,9 +167,11 @@ Capture:
 Include:
 
 - Experimental/unofficial disclaimer.
+- Unsigned-build warning and expected SmartScreen/Defender/UAC friction.
 - Upstream base commit.
 - Windows port commit.
 - Installer artifact name and checksum.
+- PowerShell SHA256 verification command.
 - What changed.
 - Known issues.
 - Tests run.
@@ -139,6 +188,8 @@ Windows Experimental Build <date>
 Before publishing:
 
 - Confirm artifact is attached.
+- Confirm `SHA256SUMS.txt` is attached or the checksum is published in release
+  notes.
 - Confirm artifact came from the manual `Windows Experimental Installer`
   workflow or from a locally documented equivalent.
 - Confirm known issues are explicit.

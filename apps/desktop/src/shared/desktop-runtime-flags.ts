@@ -15,6 +15,20 @@ export function isTruthyRuntimeFlag(value: string | undefined): boolean {
 	return normalized === "1" || normalized === "true" || normalized === "yes";
 }
 
+export function shouldDisableAutoUpdate(options: {
+	runtimeDisabled: boolean;
+	disableAutoUpdateEnv?: string;
+	experimentalWindowsBuildEnv?: string;
+	isWindows: boolean;
+}): boolean {
+	return (
+		options.runtimeDisabled ||
+		isTruthyRuntimeFlag(options.disableAutoUpdateEnv) ||
+		(options.isWindows &&
+			isTruthyRuntimeFlag(options.experimentalWindowsBuildEnv))
+	);
+}
+
 export function trimTrailingSlash(value: string): string {
 	return value.replace(/\/+$/, "");
 }

@@ -52,16 +52,38 @@ validation notes.
 - Agent wrapper and notification-hook paths include Windows-native entrypoints.
 - Local diagnostic settings can disable auto-update checks and analytics while
   preserving normal cloud login and sync.
+- Native Windows agent notification hooks use `.cmd` plus Node and do not
+  require Bash/WSL unless the user explicitly chooses a Bash-family shell.
 
 ## Limitations
 
 - This is not an official Superset release.
-- Builds are experimental and may not be code-signed.
+- Builds are experimental and unsigned unless the release notes explicitly say
+  otherwise. Expect possible Windows SmartScreen, Defender, antivirus, or UAC
+  warnings.
 - The desktop app still depends on the upstream Superset cloud/backend for
   normal login and sync behavior.
 - Some validation commands are long-running on Windows.
 - The local development stack may still depend on Docker/Caddy availability and
   the availability of upstream container images.
+
+## Installer Verification
+
+Download installers only from the fork's GitHub Releases page or from the
+`Windows Experimental Installer` workflow artifacts. Each workflow artifact
+includes `SHA256SUMS.txt`.
+
+Verify the installer before running it:
+
+```powershell
+cd "$env:USERPROFILE\Downloads"
+$expected = (Select-String -Path .\SHA256SUMS.txt -Pattern 'Superset-.*-x64\.exe').Line.Split(' ')[0]
+$actual = (Get-FileHash -Algorithm SHA256 -LiteralPath .\Superset-<version>-x64.exe).Hash.ToLowerInvariant()
+if ($actual -ne $expected) { throw "Checksum mismatch" }
+```
+
+Do not test unsigned experimental installers with production secrets,
+irreversible local data, or projects you cannot restore from backup.
 
 ## Build
 
@@ -97,6 +119,7 @@ For fork contributors and maintainers:
 - Release checklist: `docs/windows-release-checklist.md`
 - Upstream sync playbook: `docs/windows-sync-playbook.md`
 - Triage workflow: `docs/windows-triage.md`
+- Shell/hooks notes: `docs/windows-shell-hooks.md`
 - Security policy: `SECURITY.md`
 
 Use the Windows-specific GitHub issue templates when reporting installer,

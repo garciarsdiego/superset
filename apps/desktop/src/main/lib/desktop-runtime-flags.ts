@@ -2,9 +2,10 @@ import { env } from "main/env.main";
 import {
 	type DesktopRuntimeFlags,
 	getPostHogKeyOrNull,
-	isTruthyRuntimeFlag,
 	normalizeDesktopRuntimeFlags,
+	shouldDisableAutoUpdate,
 } from "shared/desktop-runtime-flags";
+import { PLATFORM } from "shared/constants";
 import { appState } from "./app-state";
 
 export function getDesktopRuntimeFlags(): DesktopRuntimeFlags {
@@ -16,10 +17,13 @@ export function getDesktopRuntimeFlags(): DesktopRuntimeFlags {
 }
 
 export function isAutoUpdateDisabledByRuntimeFlags(): boolean {
-	return (
-		getDesktopRuntimeFlags().disableAutoUpdate ||
-		isTruthyRuntimeFlag(process.env.SUPERSET_DISABLE_AUTO_UPDATE)
-	);
+	return shouldDisableAutoUpdate({
+		runtimeDisabled: getDesktopRuntimeFlags().disableAutoUpdate,
+		disableAutoUpdateEnv: process.env.SUPERSET_DISABLE_AUTO_UPDATE,
+		experimentalWindowsBuildEnv:
+			process.env.SUPERSET_EXPERIMENTAL_WINDOWS_BUILD,
+		isWindows: PLATFORM.IS_WINDOWS,
+	});
 }
 
 export function getMainPostHogKey(key: string | undefined): string | null {

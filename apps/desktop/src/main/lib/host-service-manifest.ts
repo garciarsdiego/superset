@@ -1,4 +1,5 @@
 import {
+	chmodSync,
 	existsSync,
 	mkdirSync,
 	readFileSync,
@@ -6,7 +7,11 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
-import { SUPERSET_HOME_DIR } from "./app-environment";
+import {
+	SUPERSET_HOME_DIR,
+	SUPERSET_HOME_DIR_MODE,
+	SUPERSET_SENSITIVE_FILE_MODE,
+} from "./app-environment";
 
 export interface HostServiceManifest {
 	pid: number;
@@ -27,16 +32,27 @@ function manifestPath(organizationId: string): string {
 export function writeManifest(manifest: HostServiceManifest): void {
 	const dir = manifestDir(manifest.organizationId);
 	if (!existsSync(dir)) {
-		mkdirSync(dir, { recursive: true, mode: 0o700 });
+		mkdirSync(dir, { recursive: true, mode: SUPERSET_HOME_DIR_MODE });
 	}
+	try {
+		chmodSync(dir, SUPERSET_HOME_DIR_MODE);
+	} catch {
+		// Best-effort hardening; Windows may rely on profile ACLs instead.
+	}
+	const path = manifestPath(manifest.organizationId);
 	writeFileSync(
-		manifestPath(manifest.organizationId),
+		path,
 		JSON.stringify(manifest),
 		{
 			encoding: "utf-8",
-			mode: 0o600,
+			mode: SUPERSET_SENSITIVE_FILE_MODE,
 		},
 	);
+	try {
+		chmodSync(path, SUPERSET_SENSITIVE_FILE_MODE);
+	} catch {
+		// Best-effort hardening; writeFileSync mode only applies on creation.
+	}
 }
 
 export function readManifest(

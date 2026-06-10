@@ -1,5 +1,12 @@
 import { describe, expect, it } from "bun:test";
-import { buildAnthropicEnvText, parseAnthropicForm } from "./utils";
+import {
+	buildAnthropicEnvText,
+	getProviderAction,
+	getProviderSubtitle,
+	getStatusBadge,
+	parseAnthropicForm,
+	resolveProviderStatus,
+} from "./utils";
 
 describe("Anthropic model settings utils", () => {
 	it("does not persist credential placeholder text as a real secret", () => {
@@ -42,5 +49,27 @@ describe("Anthropic model settings utils", () => {
 				extraEnv: "CLAUDE_CODE_USE_BEDROCK=1\nAWS_REGION=us-east-1",
 			}),
 		).toBe("CLAUDE_CODE_USE_BEDROCK=1\nAWS_REGION=us-east-1");
+	});
+
+	it("marks an external Claude OAuth credential as active and disconnectable", () => {
+		const status = resolveProviderStatus({
+			providerId: "anthropic",
+			authStatus: {
+				authenticated: true,
+				method: "oauth",
+				source: "external",
+				issue: null,
+			},
+		});
+
+		expect(status?.capabilities.canUseChat).toBe(true);
+		expect(getStatusBadge(status)).toEqual({
+			label: "Active",
+			variant: "secondary",
+		});
+		expect(getProviderSubtitle("anthropic", status)).toBe(
+			"Connected via Claude",
+		);
+		expect(getProviderAction(status)).toEqual({ kind: "logout" });
 	});
 });

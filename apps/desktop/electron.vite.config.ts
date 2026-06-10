@@ -145,6 +145,9 @@ export default defineConfig({
 			"process.env.SUPERSET_WORKSPACE_NAME": defineEnv(
 				process.env.SUPERSET_WORKSPACE_NAME,
 			),
+			"process.env.SUPERSET_EXPERIMENTAL_WINDOWS_BUILD": defineEnv(
+				process.env.SUPERSET_EXPERIMENTAL_WINDOWS_BUILD,
+			),
 		},
 
 		build: {

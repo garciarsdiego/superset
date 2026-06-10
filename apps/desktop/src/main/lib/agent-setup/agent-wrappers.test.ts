@@ -42,8 +42,25 @@ mock.module("./notify-hook", () => ({
 			platform === "win32" ? "notify.cmd" : "notify.sh",
 		),
 	getNotifyScriptContent: () => "#!/bin/bash\nexit 0\n",
-	getWindowsNotifyCommandScriptContent: () =>
-		'@echo off\r\nrem Superset agent notification hook v5\r\nnode.exe "%~dp0notify.mjs" %*\r\n',
+	getWindowsNotifyCommandScriptContent: (
+		bundledNodeRuntimePath = String.raw`C:\Program Files\Superset\Superset.exe`,
+	) =>
+		[
+			"@echo off",
+			"rem Superset agent notification hook v5",
+			"setlocal",
+			'set "HOOK_DIR=%~dp0"',
+			`set "NODE_EXE=${bundledNodeRuntimePath}"`,
+			'if defined SUPERSET_NOTIFY_NODE set "NODE_EXE=%SUPERSET_NOTIFY_NODE%"',
+			'if not exist "%NODE_EXE%" if exist "%HOOK_DIR%..\\bin\\node.exe" set "NODE_EXE=%HOOK_DIR%..\\bin\\node.exe"',
+			'if not exist "%NODE_EXE%" if exist "%HOOK_DIR%..\\lib\\node.exe" set "NODE_EXE=%HOOK_DIR%..\\lib\\node.exe"',
+			'if not exist "%NODE_EXE%" for %%I in (node.exe) do set "NODE_EXE=%%~$PATH:I"',
+			'if not exist "%NODE_EXE%" exit /b 0',
+			'set "ELECTRON_RUN_AS_NODE=1"',
+			'"%NODE_EXE%" "%HOOK_DIR%notify.mjs" %*',
+			"exit /b 0",
+			"",
+		].join("\r\n"),
 	getNotifyNodeScriptContent: () =>
 		'JSON.parse\nmethod: "POST"\nSUPERSET_HOST_AGENT_HOOK_URL\nSUPERSET_AGENT_ID\n/hook/complete\n',
 	createNotifyScript: () => {},
