@@ -64,20 +64,18 @@ appropriate tracker.
 
 ## GitHub Project
 
-The repository has Issues and Projects enabled. Creating a GitHub Projects v2
-board requires the local GitHub CLI token to include project scopes.
+The repository has Issues and Projects enabled.
 
-Authorize once:
+Project board:
 
-```powershell
-gh auth refresh -s project,read:project
-```
+- https://github.com/users/garciarsdiego/projects/1
 
-Then create the board:
+The board starts with the four roadmap tracking issues and these fields:
 
-```powershell
-gh project create --owner garciarsdiego --title "Superset Windows Port"
-```
+- Status: Todo, In Progress, Done.
+- Area: Installer, Auth, Terminal, Agent, Performance, CI, Release, Docs, Upstream.
+- Priority: P0, P1, P2, P3.
+- Upstream impact: Fork only, Upstream candidate, Blocked upstream.
 
 Suggested views:
 
@@ -86,11 +84,9 @@ Suggested views:
 - Release readiness.
 - Upstream parity.
 
-Suggested fields:
+If a new maintainer needs to manage Projects through GitHub CLI, authorize the
+local token once:
 
-- Status: Triage, Ready, In progress, Blocked, Done.
-- Area: Installer, Auth, Terminal, Agent, Performance, CI, Release, Docs.
-- Priority: P0, P1, P2, P3.
-- Upstream impact: Fork only, Upstream candidate, Blocked upstream.
-
-Once the Project exists, add the four tracking issues first.
+```powershell
+gh auth refresh -s project
+```
