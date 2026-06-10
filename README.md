@@ -110,6 +110,15 @@ Good issues for this fork are usually one of:
 Changes that create a separate product direction should wait unless they are
 explicitly discussed first.
 
+## Automation
+
+The fork has two Windows-specific GitHub Actions:
+
+- `Windows Port CI`: automatic typecheck and focused Windows port tests on PRs
+  and pushes to `windows-experimental` or `windows-native-port`.
+- `Windows Experimental Installer`: manual unsigned Windows x64 installer build
+  with downloadable artifacts.
+
 ---
 
 <div align="center">

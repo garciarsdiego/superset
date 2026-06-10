@@ -61,6 +61,8 @@ bun run --cwd apps/desktop typecheck
 bun test apps/desktop/src/main/lib/agent-setup/agent-wrappers.test.ts apps/desktop/scripts/windows-native-build-prereqs.test.ts apps/desktop/src/renderer/lib/terminal/launch-command.test.ts apps/desktop/src/renderer/lib/external-app-platforms.test.ts apps/desktop/src/renderer/lib/file-manager-labels.test.ts apps/desktop/src/renderer/lib/script-file-imports.test.ts
 ```
 
+After pushing, confirm the `Windows Port CI` workflow passes on GitHub.
+
 Push:
 
 ```powershell

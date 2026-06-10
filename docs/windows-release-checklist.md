@@ -42,6 +42,17 @@ Expected:
 
 ## 3. Run Tests
 
+The automatic baseline is the `Windows Port CI` workflow:
+
+- Pushes to `windows-experimental`.
+- Pushes to `windows-native-port`.
+- Pull requests targeting either branch.
+- Manual `workflow_dispatch` runs.
+
+It runs desktop typecheck and focused Windows port tests on `windows-latest`.
+
+For local verification:
+
 ```powershell
 cd "C:\path\to\superset"
 bun run --cwd apps/desktop typecheck
@@ -52,6 +63,15 @@ Add broader tests when the release touches host-service, pty-daemon, CLI, auth,
 or installer behavior.
 
 ## 4. Build Installer
+
+Preferred automated path:
+
+1. Open GitHub Actions.
+2. Select `Windows Experimental Installer`.
+3. Run the workflow on `windows-experimental` or a specific SHA/tag.
+4. Download `superset-windows-experimental-installer` from artifacts.
+
+Local fallback:
 
 ```powershell
 cd "C:\path\to\superset"
@@ -119,6 +139,8 @@ Windows Experimental Build <date>
 Before publishing:
 
 - Confirm artifact is attached.
+- Confirm artifact came from the manual `Windows Experimental Installer`
+  workflow or from a locally documented equivalent.
 - Confirm known issues are explicit.
 - Confirm README links point to the release.
 - Confirm no secrets or local paths are included in release notes.

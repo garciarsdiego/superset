@@ -71,6 +71,10 @@ bun run --cwd apps/desktop prebuild
 bun run --cwd apps/desktop build --win --x64
 ```
 
+The fork also runs `Windows Port CI` automatically for pushes and pull requests
+targeting `windows-experimental` or `windows-native-port`. Treat a green run as
+the baseline requirement before moving a PR out of triage.
+
 ## PR Expectations
 
 Every PR should include:

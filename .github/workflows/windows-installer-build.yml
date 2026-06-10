@@ -1,0 +1,105 @@
+name: Windows Experimental Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or SHA to build"
+        required: false
+        default: windows-experimental
+      retention_days:
+        description: "Artifact retention days"
+        required: false
+        default: "14"
+      upload_unpacked:
+        description: "Upload win-unpacked directory as a debugging artifact"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-installer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-installer:
+    name: Build unsigned Windows installer
+    runs-on: windows-latest
+    timeout-minutes: 150
+
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      SUPERSET_WORKSPACE_NAME: superset
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Bun
+        id: setup-bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - name: Cache dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ steps.setup-bun.outputs.bun-revision }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-${{ steps.setup-bun.outputs.bun-revision }}-
+
+      - name: Install dependencies
+        run: bun install --frozen --ignore-scripts
+
+      - name: Verify native Windows build prerequisites
+        shell: pwsh
+        run: |
+          $json = bun -e "import { checkWindowsNativeBuildPrerequisites } from './apps/desktop/scripts/windows-native-build-prereqs.ts'; console.log(JSON.stringify(checkWindowsNativeBuildPrerequisites(), null, 2));"
+          $json
+          $check = $json | ConvertFrom-Json
+          if (-not $check.ok) {
+            Write-Error "Windows native build prerequisites are missing on this runner."
+            exit 1
+          }
+
+      - name: Install desktop native dependencies
+        run: bun run --cwd apps/desktop install:deps
+
+      - name: Prebuild desktop app
+        run: bun run --cwd apps/desktop prebuild
+
+      - name: Build Windows x64 installer
+        run: bun run --cwd apps/desktop build --win --x64
+
+      - name: List release artifacts
+        shell: pwsh
+        run: |
+          Get-ChildItem -LiteralPath apps/desktop/release -Recurse |
+            Select-Object FullName, Length, LastWriteTime |
+            Format-Table -AutoSize
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: superset-windows-experimental-installer
+          path: |
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.blockmap
+            apps/desktop/release/latest*.yml
+          retention-days: ${{ fromJSON(inputs.retention_days) }}
+          if-no-files-found: error
+
+      - name: Upload win-unpacked debugging artifact
+        if: inputs.upload_unpacked
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: superset-windows-experimental-win-unpacked
+          path: apps/desktop/release/win-unpacked
+          retention-days: ${{ fromJSON(inputs.retention_days) }}
+          if-no-files-found: error

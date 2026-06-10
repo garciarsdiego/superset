@@ -84,6 +84,23 @@ Suggested views:
 - Release readiness.
 - Upstream parity.
 
+## Automation Signals
+
+Use these GitHub Actions as mechanical quality gates:
+
+- `Windows Port CI`: automatic baseline for pushes and PRs on
+  `windows-experimental` and `windows-native-port`.
+- `Windows Experimental Installer`: manual installer build for release
+  candidates and smoke-test artifacts.
+
+Suggested Project use:
+
+- Keep new reports in `Todo` with `triage`.
+- Add `needs-repro` until a maintainer can reproduce or validate logs.
+- Move implementation PRs to `In Progress` once an agent or human starts work.
+- Move to `Done` only after the relevant issue/PR has passing checks or a
+  documented manual validation.
+
 If a new maintainer needs to manage Projects through GitHub CLI, authorize the
 local token once:
 
