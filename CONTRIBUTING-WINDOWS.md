@@ -97,3 +97,6 @@ include:
 - Agent/provider involved, if any.
 - Exact command/log/error output.
 - Whether the issue reproduces after restart or reinstall.
+
+See `docs/windows-triage.md` for labels, milestones, and the public roadmap
+tracking issues.

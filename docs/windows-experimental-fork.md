@@ -96,6 +96,7 @@ For fork contributors and maintainers:
 - Contribution guide: `CONTRIBUTING-WINDOWS.md`
 - Release checklist: `docs/windows-release-checklist.md`
 - Upstream sync playbook: `docs/windows-sync-playbook.md`
+- Triage workflow: `docs/windows-triage.md`
 - Security policy: `SECURITY.md`
 
 Use the Windows-specific GitHub issue templates when reporting installer,

@@ -15,6 +15,7 @@ Useful links:
 - Windows fork notes: [docs/windows-experimental-fork.md](docs/windows-experimental-fork.md)
 - Release checklist: [docs/windows-release-checklist.md](docs/windows-release-checklist.md)
 - Upstream sync playbook: [docs/windows-sync-playbook.md](docs/windows-sync-playbook.md)
+- Triage workflow: [docs/windows-triage.md](docs/windows-triage.md)
 - Validation audit: [docs/windows-port-audit.md](docs/windows-port-audit.md)
 
 ## Current Status
