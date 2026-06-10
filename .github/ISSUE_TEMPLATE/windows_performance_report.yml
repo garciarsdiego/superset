@@ -1,0 +1,56 @@
+name: Windows performance report
+description: Report slow startup, terminal, sync, CPU, memory, or installer performance on Windows.
+title: "[windows performance] "
+labels: ["windows", "performance", "needs-repro"]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: Superset build or commit
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware summary
+      placeholder: "CPU, RAM, disk type"
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2 x64"
+  - type: dropdown
+    id: area
+    attributes:
+      label: Slow area
+      options:
+        - App startup
+        - Login/auth
+        - Workspace creation
+        - Terminal startup
+        - Agent execution
+        - File watching
+        - Cloud sync
+        - Electric sync
+        - Installer
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: measurements
+    attributes:
+      label: Measurements
+      description: Include timings, CPU, memory, or before/after comparisons.
+      placeholder: "Startup takes 45s before main window appears..."
+    validations:
+      required: true
+  - type: textarea
+    id: toggles
+    attributes:
+      label: Diagnostic toggles tested
+      description: Note whether analytics, updater, cloud sync, or Electric sync were toggled.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: text

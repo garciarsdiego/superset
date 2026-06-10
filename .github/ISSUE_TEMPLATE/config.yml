@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Upstream Superset
+    url: https://github.com/superset-sh/superset
+    about: Use upstream for non-Windows issues that reproduce on the official project.
+  - name: Windows experimental fork notes
+    url: https://github.com/garciarsdiego/superset/blob/windows-experimental/docs/windows-experimental-fork.md
+    about: Read the scope and limitations of the unofficial Windows channel.

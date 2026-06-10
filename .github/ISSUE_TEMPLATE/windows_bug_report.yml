@@ -1,0 +1,74 @@
+name: Windows bug report
+description: Report a Windows-specific runtime or parity bug.
+title: "[windows bug] "
+labels: ["bug", "windows", "needs-repro"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing the unofficial Windows experimental channel.
+        Please include enough detail for someone else to reproduce the issue.
+  - type: input
+    id: build
+    attributes:
+      label: Superset build or commit
+      description: Installer version, release tag, or commit SHA.
+      placeholder: "Superset-1.12.5-x64.exe or b930f6267"
+    validations:
+      required: true
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2 x64"
+    validations:
+      required: true
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: Install method
+      options:
+        - Installer
+        - win-unpacked
+        - Development build
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: List exact steps and commands.
+      placeholder: |
+        1. Install ...
+        2. Open ...
+        3. Click ...
+        4. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste relevant logs, screenshots, or error text.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I restarted Superset and reproduced the issue.
+        - label: I checked whether the issue is Windows-specific.
+        - label: I am not reporting a request to bypass licensing or paid features.

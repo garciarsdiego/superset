@@ -1,0 +1,63 @@
+name: Windows agent or provider issue
+description: Report issues with Claude, Codex, Gemini, Copilot, Cursor, Amp, or provider auth on Windows.
+title: "[windows agent] "
+labels: ["windows", "agent-wrapper", "needs-repro"]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: Superset build or commit
+      placeholder: "Release tag or commit SHA"
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent/provider
+      options:
+        - Claude Code
+        - OpenAI Codex CLI
+        - Gemini CLI
+        - GitHub Copilot
+        - Cursor Agent
+        - Amp Code
+        - OpenCode
+        - Droid
+        - Mastra Code
+        - Pi
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: agent-version
+    attributes:
+      label: Agent/provider version
+      placeholder: "claude --version, codex --version, etc."
+  - type: dropdown
+    id: shell
+    attributes:
+      label: Shell
+      options:
+        - PowerShell
+        - pwsh
+        - cmd.exe
+        - Git Bash
+        - WSL
+        - Other
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Error output
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context

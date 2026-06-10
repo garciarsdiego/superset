@@ -1,3 +1,116 @@
+# Superset for Windows - Unofficial Experimental Channel
+
+This fork is an **unofficial experimental Windows channel** for
+[superset-sh/superset](https://github.com/superset-sh/superset).
+
+It exists to make the native Windows port easier to install, test, maintain,
+and eventually upstream. It is not affiliated with, endorsed by, or supported
+by Superset, Inc.
+
+Useful links:
+
+- Upstream project: https://github.com/superset-sh/superset
+- Upstream draft PR: https://github.com/superset-sh/superset/pull/5210
+- Upstream tracking issue: https://github.com/superset-sh/superset/issues/5209
+- Windows fork notes: [docs/windows-experimental-fork.md](docs/windows-experimental-fork.md)
+- Release checklist: [docs/windows-release-checklist.md](docs/windows-release-checklist.md)
+- Upstream sync playbook: [docs/windows-sync-playbook.md](docs/windows-sync-playbook.md)
+- Validation audit: [docs/windows-port-audit.md](docs/windows-port-audit.md)
+
+## Current Status
+
+This branch targets **Windows x64** and is intended for experimental users and
+contributors. The goal is upstream parity: Windows-specific changes should be
+limited to native runtime compatibility, installer behavior, diagnostics,
+release automation, and documentation.
+
+What currently works:
+
+- Native Windows desktop build and NSIS installer generation.
+- Packaged login against the upstream Superset cloud/backend.
+- Windows terminal, shell, process, wrapper, and notification-hook paths.
+- Host-service and pty-daemon communication through Windows named pipes.
+- Installer flow with optional uninstall/cleanup of an existing local install.
+- Runtime diagnostic toggles for updater checks, analytics, cloud sync, and
+  Electric sync.
+
+Known limitations:
+
+- This is not an official Superset release.
+- Builds may be unsigned and can trigger Windows SmartScreen warnings.
+- Normal login/sync still depends on the upstream Superset cloud/backend.
+- The full local development stack still needs Docker/Caddy.
+- Agent CLI behavior is still being validated across Windows shells.
+
+This fork does not remove or bypass upstream licensing, entitlement, or
+paid-feature controls. The source remains under Elastic License 2.0; see
+[LICENSE.md](LICENSE.md).
+
+## Install on Windows
+
+If this fork has a published Windows release, download the latest
+`Superset-*-x64.exe` installer from the fork's Releases page.
+
+If no release artifact is published yet, build locally:
+
+```powershell
+cd "C:\path\to\superset"
+bun run --cwd apps/desktop install:deps
+bun run --cwd apps/desktop prebuild
+bun run --cwd apps/desktop build --win --x64
+```
+
+Expected installer output:
+
+```text
+apps/desktop/release/Superset-<version>-x64.exe
+```
+
+If the app has already been compiled and only installer packaging needs to be
+retried:
+
+```powershell
+cd "C:\path\to\superset"
+$env:CSC_IDENTITY_AUTO_DISCOVERY = "false"
+bun run --cwd apps/desktop scripts/run-electron-builder.ts --publish never --win --x64
+```
+
+## Windows Build Prerequisites
+
+Install and verify:
+
+- Bun
+- Git and GitHub CLI
+- Docker Desktop
+- Caddy
+- Visual Studio Build Tools 2022
+- MSVC v143 C++ x64/x86 compiler tools
+- MSVC v143 C++ x64/x86 Spectre-mitigated libraries
+- Windows 10 or Windows 11 SDK
+
+Preflight check:
+
+```powershell
+cd "C:\path\to\superset"
+bun -e "import { checkWindowsNativeBuildPrerequisites } from './apps/desktop/scripts/windows-native-build-prereqs.ts'; console.log(JSON.stringify(checkWindowsNativeBuildPrerequisites(), null, 2));"
+```
+
+## Contribute to the Windows Channel
+
+Start with [CONTRIBUTING-WINDOWS.md](CONTRIBUTING-WINDOWS.md).
+
+Good issues for this fork are usually one of:
+
+- Required for native Windows support.
+- Required for parity with upstream behavior.
+- Required for install/build/release automation.
+- Required to collect useful user feedback for the experimental channel.
+
+Changes that create a separate product direction should wait unless they are
+explicitly discussed first.
+
+---
+
 <div align="center">
 
 <img width="full" alt="Superset" src="apps/marketing/public/images/readme-hero.png" />

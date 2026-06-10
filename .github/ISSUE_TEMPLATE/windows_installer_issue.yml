@@ -1,0 +1,52 @@
+name: Windows installer issue
+description: Report install, uninstall, cleanup, or launch-after-install problems.
+title: "[windows installer] "
+labels: ["windows", "installer", "needs-repro"]
+body:
+  - type: input
+    id: installer
+    attributes:
+      label: Installer artifact
+      placeholder: "Superset-1.12.5-x64.exe"
+    validations:
+      required: true
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2 x64"
+    validations:
+      required: true
+  - type: dropdown
+    id: scenario
+    attributes:
+      label: Scenario
+      options:
+        - Fresh install
+        - Reinstall over existing install
+        - Uninstall
+        - Cleanup before reinstall
+        - Launch after install
+        - SmartScreen/Defender warning
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      placeholder: "What did you click or run?"
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result
+      placeholder: "What happened?"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Installer logs or screenshots
+      render: text

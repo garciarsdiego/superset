@@ -1,0 +1,38 @@
+name: Windows upstream parity gap
+description: Report behavior that works upstream/macOS but differs on Windows.
+title: "[windows parity] "
+labels: ["windows", "upstream-parity", "needs-repro"]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: Superset Windows build or commit
+    validations:
+      required: true
+  - type: input
+    id: upstream-reference
+    attributes:
+      label: Upstream reference
+      description: Link to docs, issue, PR, or macOS behavior if known.
+  - type: textarea
+    id: windows-behavior
+    attributes:
+      label: Windows behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected-upstream-behavior
+    attributes:
+      label: Expected upstream/macOS behavior
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: User impact
+      placeholder: "Who is blocked and how severe is it?"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      render: text

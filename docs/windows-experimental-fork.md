@@ -89,6 +89,18 @@ Expected installer output:
 apps/desktop/release/Superset-<version>-x64.exe
 ```
 
+## Contributing and Operations
+
+For fork contributors and maintainers:
+
+- Contribution guide: `CONTRIBUTING-WINDOWS.md`
+- Release checklist: `docs/windows-release-checklist.md`
+- Upstream sync playbook: `docs/windows-sync-playbook.md`
+- Security policy: `SECURITY.md`
+
+Use the Windows-specific GitHub issue templates when reporting installer,
+agent/provider, performance, or parity issues.
+
 ## Recommended Fork Labeling
 
 Use wording like:
